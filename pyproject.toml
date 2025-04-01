@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shivonai"
+version = "0.1.0"
+description = "Tools for connecting AI agents with MCP server"
+readme = "README.md"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests>=2.25.0"
+]
+requires-python = ">=3.7"
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/shivonai"
+"Bug Tracker" = "https://github.com/yourusername/shivonai/issues"
+
+[project.optional-dependencies]
+langchain = ["langchain>=0.1.0"]
+llamaindex = ["llama-index>=0.1.0"]
+crewai = ["crewai>=0.1.0"]
+agno = ["agno>=0.1.0"]
+all = ["langchain>=0.1.0", "llama-index>=0.1.0", "crewai>=0.1.0", "agno>=0.1.0"]
