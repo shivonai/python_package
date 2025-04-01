@@ -73,7 +73,7 @@ def convert_parameters_to_schema(parameters: List[Dict[str, Any]]) -> Dict[str, 
     return schema
 
 
-def agno_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> Dict[str, Callable]:
+def agno_toolkit(auth_token: str, base_url: str = "https://mcp-server.shivonai.com") -> Dict[str, Callable]:
     """Create Agno tools from MCP Server.
     
     Args:
@@ -141,7 +141,7 @@ def agno_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> Di
 
 def create_agno_agent_with_mcp_tools(
     auth_token: str, 
-    base_url: str = "http://localhost:5000",
+    base_url: str = "https://mcp-server.shivonai.com",
     model: Any = None,
     instructions: Union[str, List[str]] = None,
     description: str = None,
@@ -212,7 +212,7 @@ def create_agno_agent_with_mcp_tools(
 
 
 # Function to get the available tools
-def get_available_mcp_tools(auth_token: str, base_url: str = "http://localhost:5000") -> List[str]:
+def get_available_mcp_tools(auth_token: str, base_url: str = "https://mcp-server.shivonai.com") -> List[str]:
     """Get a list of available MCP tool names.
     
     Args:

@@ -9,7 +9,7 @@ from shivonai.core.mcp_client import MCPClient
 from shivonai.utils.helpers import parse_tool_parameters, create_tool_description
 
 
-def langchain_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> List[Tool]:
+def langchain_toolkit(auth_token: str, base_url: str = "https://mcp-server.shivonai.com") -> List[Tool]:
     """Create LangChain tools from MCP Server.
     
     Args:

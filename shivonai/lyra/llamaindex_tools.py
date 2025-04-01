@@ -8,7 +8,7 @@ from shivonai.core.mcp_client import MCPClient
 from shivonai.utils.helpers import create_tool_description
 
 
-def llamaindex_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> Dict[str, Any]:
+def llamaindex_toolkit(auth_token: str, base_url: str = "https://mcp-server.shivonai.com") -> Dict[str, Any]:
     """Create LlamaIndex tools from MCP Server.
     
     Args:

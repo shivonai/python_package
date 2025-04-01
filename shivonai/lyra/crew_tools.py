@@ -8,7 +8,7 @@ from shivonai.core.mcp_client import MCPClient
 from shivonai.utils.helpers import parse_tool_parameters, create_tool_description
 
 
-def crew_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> List[Any]:
+def crew_toolkit(auth_token: str, base_url: str = "https://mcp-server.shivonai.com") -> List[Any]:
     """Create CrewAI tools from MCP Server.
     
     Args:

@@ -7,7 +7,7 @@ from typing import Dict, List, Any, Optional
 class MCPClient:
     """Client to connect with MCP Server."""
     
-    def __init__(self, base_url: str = "http://localhost:5000"):
+    def __init__(self, base_url: str = "https://mcp-server.shivonai.com"):
         """Initialize MCP Client.
         
         Args:

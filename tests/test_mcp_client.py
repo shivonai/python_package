@@ -8,7 +8,7 @@ class TestMCPClient(unittest.TestCase):
     
     def setUp(self):
         """Set up test environment."""
-        self.client = MCPClient(base_url="http://test-server:5000")
+        self.client = MCPClient(base_url="https://mcp-server.shivonai.com")
         self.test_token = "test-token"
     
     @patch('requests.post')
@@ -24,7 +24,7 @@ class TestMCPClient(unittest.TestCase):
         
         # Assert
         mock_post.assert_called_once_with(
-            "http://test-server:5000/initialize",
+            "https://mcp-server.shivonai.com/initialize",
             json={"auth_token": self.test_token}
         )
         self.assertEqual(result, {"name": "Test Server", "version": "1.0"})
@@ -51,7 +51,7 @@ class TestMCPClient(unittest.TestCase):
         
         # Assert
         mock_get.assert_called_once_with(
-            "http://test-server:5000/tools/list",
+            "https://mcp-server.shivonai.com/tools/list",
             headers={"Authorization": f"Bearer {self.test_token}"}
         )
         self.assertEqual(len(result), 2)
@@ -81,7 +81,7 @@ class TestMCPClient(unittest.TestCase):
         
         # Assert
         mock_post.assert_called_once_with(
-            "http://test-server:5000/tools/call",
+            "https://mcp-server.shivonai.com/tools/call",
             headers={"Authorization": f"Bearer {self.test_token}"},
             json={"name": "test_tool", "parameters": {"param1": "value1"}}
         )
