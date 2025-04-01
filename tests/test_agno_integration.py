@@ -44,8 +44,9 @@ class TestAgnoIntegration(unittest.TestCase):
             # Check that we got the expected tools
             self.assertEqual(len(tools), 1)
             
-            # Check tool attributes
+            # Check that the tool is a function with the correct attributes
             tool = tools[0]
+            self.assertTrue(callable(tool))
             self.assertEqual(tool.__name__, "weather")
             self.assertIn("Get weather information", tool.__doc__)
     
@@ -78,9 +79,8 @@ class TestAgnoIntegration(unittest.TestCase):
             # Call the function to get the tools
             tools = agno_toolkit("test-token", "http://test-server:5000")
             
-            # Call the first tool function
-            tool_func = tools[0]
-            result = tool_func(message="Hello, world!")
+            # Call the tool function
+            result = tools[0](message="Hello, world!")
             
             # Assert
             mock_client.call_tool.assert_called_once_with("echo", {"message": "Hello, world!"})
