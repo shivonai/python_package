@@ -11,6 +11,10 @@ A Python package for integrating AI recruitment tools with various AI agent fram
   - CrewAI
   - Agno
 
+## Generate auth_token
+
+visit https://shivonai.com to generate your auth_token.
+
 ## Installation
 
 You can install ShivonAI from PyPI:
