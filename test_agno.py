@@ -21,19 +21,19 @@ print(tools)
 # Print available tools
 # print(tools.__name__)
 
-print(f"Available tools: {[tool.__name__ for tool in tools]}")
+print(f"Available MCP tools: {list(tools.keys())}")
 
 # Create an Agno agent with tools
 agent = Agent(
     # model=OpenAIChat(id="gpt-3.5-turbo"),
     model = Claude(id="anthropic.claude-3-5-sonnet-20240620-v1:0"),
-    tools=tools,
+    tools=list(tools.values()),
     markdown=True,
     show_tool_calls=True
 )
 
 # Try the agent with a simple task
 try:
-    agent.print_response("use appropriate tool and let me know what listings I have? also for tool calling send valid json.", stream=True)
+    agent.print_response("what listing are there?", stream=True)
 except Exception as e:
     print(f"Error: {e}")

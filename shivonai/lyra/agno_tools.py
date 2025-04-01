@@ -1,15 +1,16 @@
 """
 Agno integration for MCP Server tools.
 """
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import List, Dict, Any, Optional, Callable, Union
 import functools
+import inspect
 import json
 
 from shivonai.core.mcp_client import MCPClient
 from shivonai.utils.helpers import create_tool_description
 
 
-def agno_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> List[Dict[str, Any]]:
+def agno_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> Dict[str, Callable]:
     """Create Agno tools from MCP Server.
     
     Args:
@@ -17,91 +18,117 @@ def agno_toolkit(auth_token: str, base_url: str = "http://localhost:5000") -> Li
         base_url: URL of the MCP server
         
     Returns:
-        List of tool specifications for Agno
+        Dictionary of Agno tool functions
     """
     try:
+        # Import required Agno modules
         from agno.agent import Agent
     except ImportError:
         raise ImportError(
             "Could not import agno. "
             "Please install it with `pip install agno`."
         )
-    
-    # Set up client and authenticate
+
     client = MCPClient(base_url)
     client.authenticate(auth_token)
-    
-    # Get available tools
     available_tools = client.list_tools()
     
-    # Format tools to match Agno/Claude JSON Schema draft 2020-12 format
-    tool_specs = []
+    # Dictionary to store our created tools
+    agno_tools = {}
     
+    # Create functions for each MCP tool
     for tool_info in available_tools:
         tool_name = tool_info["name"]
         tool_description = tool_info.get("description", "")
+        tool_parameters = tool_info.get("parameters", [])
         
-        # Create the JSON Schema compliant parameters object
-        parameters = {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
-        
-        # Process the parameters from the MCP server
-        for param in tool_info.get("parameters", []):
-            param_name = param.get("name")
-            param_description = param.get("description", "")
-            param_type = param.get("type", "string")
-            param_required = param.get("required", False)
+        # Create the function that will handle the tool call
+        def make_tool_func(name, description, parameters):
+            def tool_func(**kwargs):
+                # Call the MCP tool and get the response
+                response = client.call_tool(name, kwargs)
+                
+                # Convert the response to a string if it's a list or dictionary
+                # This is important for compatibility with Agno and OpenAI's expectations
+                if isinstance(response, (list, dict)):
+                    return json.dumps(response, indent=2)
+                return response
             
-            # Map MCP parameter types to JSON Schema types
-            json_type = param_type
-            if param_type not in ["string", "number", "integer", "boolean", "array", "object", "null"]:
-                json_type = "string"  # Default to string for unknown types
+            # Create full description with parameters for the docstring
+            full_description = create_tool_description(name, description, parameters)
+            tool_func.__doc__ = full_description
+            tool_func.__name__ = name
             
-            # Add parameter to properties
-            parameters["properties"][param_name] = {
-                "type": json_type,
-                "description": param_description
-            }
-            
-            # Add to required list if necessary
-            if param_required:
-                parameters["required"].append(param_name)
+            return tool_func
         
-        # Create the tool spec in the format Claude expects
-        tool_spec = {
-            "type": "function",
-            "function": {
-                "name": tool_name,
-                "description": tool_description,
-                "parameters": parameters
-            }
-        }
+        # Create the function for this specific tool
+        func = make_tool_func(tool_name, tool_description, tool_parameters)
         
-        # Add the tool to our list
-        tool_specs.append(tool_spec)
+        # Store the function in our dictionary
+        agno_tools[tool_name] = func
     
-    # Create a wrapper class to handle the MCP client interaction
-    class MCPToolset:
-        def __init__(self, client, tools):
-            self.client = client
-            self.tools = tools
-            self.specs = tool_specs
-        
-        def get_function_tool(self, name):
-            """Get a function for the specified tool name."""
-            def tool_function(**kwargs):
-                """Tool function that calls the MCP server."""
-                return self.client.call_tool(name, kwargs)
-            return tool_function
-        
-        def __iter__(self):
-            """Make the toolset iterable."""
-            for tool in self.tools:
-                tool_name = tool["function"]["name"]
-                yield self.get_function_tool(tool_name)
+    return agno_tools
+
+
+def create_agno_agent_with_mcp_tools(
+    auth_token: str, 
+    base_url: str = "http://localhost:5000",
+    model: Any = None,
+    instructions: Union[str, List[str]] = None,
+    description: str = None,
+    show_tool_calls: bool = True,
+    markdown: bool = True
+) -> Any:
+    """Create an Agno agent with MCP tools.
     
-    # Return an instance that can be used with Agno
-    return MCPToolset(client, tool_specs)
+    Args:
+        auth_token: Authentication token for MCP Server
+        base_url: URL of the MCP server
+        model: The LLM model to use with the agent
+        instructions: Instructions for the agent
+        description: Description of the agent
+        show_tool_calls: Whether to show tool calls in the agent's response
+        markdown: Whether to render responses as markdown
+        
+    Returns:
+        An Agno agent with MCP tools
+    """
+    try:
+        from agno.agent import Agent
+    except ImportError:
+        raise ImportError("Could not import agno. Please install it with `pip install agno`.")
+    
+    # Get MCP tools as functions
+    tools_dict = agno_toolkit(auth_token, base_url)
+    tools = list(tools_dict.values())
+    
+    # Print available tools for debugging
+    tool_names = [tool.__name__ for tool in tools]
+    print(f"Available MCP tools for Agno: {tool_names}")
+    
+    # Create an Agno agent with the tools
+    agent = Agent(
+        model=model,
+        instructions=instructions,
+        description=description,
+        tools=tools,
+        show_tool_calls=show_tool_calls,
+        markdown=markdown
+    )
+    
+    return agent
+
+
+# Function to get the available tools
+def get_available_mcp_tools(auth_token: str, base_url: str = "http://localhost:5000") -> List[str]:
+    """Get a list of available MCP tool names.
+    
+    Args:
+        auth_token: Authentication token for MCP Server
+        base_url: URL of the MCP server
+        
+    Returns:
+        List of tool names
+    """
+    tools_dict = agno_toolkit(auth_token, base_url)
+    return list(tools_dict.keys())
