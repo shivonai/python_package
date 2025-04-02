@@ -17,19 +17,6 @@ visit https://shivonai.com to generate your auth_token.
 
 ## Installation
 
-You can install ShivonAI from PyPI:
-
-```bash
-pip install shivonai
-```
-
-Or install directly from GitHub:
-
-```bash
-pip install git+https://github.com/shivonai/python_package.git
-```
-
-with framework support
 ```bash
 pip install shivonai[langchain]  # For LangChain
 pip install shivonai[llamaindex]  # For LlamaIndex
@@ -39,26 +26,6 @@ pip install shivonai[all]        # For all frameworks
 ```
 
 ## Getting Started
-
-### Basic Usage
-
-```python
-from shivonai.core.mcp_client import MCPClient
-
-# Initialize the client
-client = MCPClient(base_url="http://your-mcp-server:5000")
-
-# Authenticate with your token
-server_info = client.authenticate("your-auth-token")
-
-# List available tools
-tools = client.list_tools()
-
-# Call a tool
-result = client.call_tool("tool_name", {"param1": "value1", "param2": "value2"})
-
-print(result)
-```
 
 ### LangChain Integration
 
