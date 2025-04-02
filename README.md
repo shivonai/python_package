@@ -29,6 +29,15 @@ Or install directly from GitHub:
 pip install git+https://github.com/shivonai/python_package.git
 ```
 
+with framework support
+```bash
+pip install shivonai[langchain]  # For LangChain
+pip install shivonai[llamaindex]  # For LlamaIndex
+pip install shivonai[crewai]     # For CrewAI
+pip install shivonai[agno]       # For Agno
+pip install shivonai[all]        # For all frameworks
+```
+
 ## Getting Started
 
 ### Basic Usage
