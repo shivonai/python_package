@@ -4,7 +4,7 @@ ShivonAI Package - Tools for connecting AI agents with MCP server
 """
 from shivonai.core.mcp_client import MCPClient
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 # shivonai/core/__init__.py
 """
